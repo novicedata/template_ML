@@ -1,0 +1,49 @@
+---
+title: "multi_plotting"
+output: html_document
+date: "2023-09-23"
+---
+# import
+```{r}
+library(MASS)
+```
+
+# Train set, Test set으로 나누기(8:2)
+```{r}
+library(caTools)
+set.seed(42)
+split = sample.split(Boston$medv, SplitRatio=0.8)
+train = subset(Boston, split==T)
+test = subset(Boston, split==F)
+```
+
+# Fitting 모델
+```{r}
+model = lm(medv~., data=train)
+
+summary(model)
+```
+
+# Predicting the test set result
+```{r}
+y_pred = predict(model, newdata = test)
+print(y_pred)
+```
+
+# 시각화
+```{r}
+library(ggplot2)
+
+ggplot() +
+  geom_line(aes(x = (1:length(test$medv)), y = test$medv, color = 'Real'), size = 1) +
+  geom_line(aes(x = (1:length(y_pred)), y = y_pred, color = 'Prediction'), size = 1) +
+  scale_color_manual(values = c('Real' = 'black', 'Prediction' = 'red'),
+                     labels = c('Prediction', 'Real')) +
+  labs(color = 'Line') +
+  theme_bw() +
+  xlab('x') +
+  ylab('medv') +
+  theme(legend.position = c(0.1,0.9))
+```
+
+
